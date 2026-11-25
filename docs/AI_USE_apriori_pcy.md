@@ -12,3 +12,5 @@
 | 2026-11-25 | Apriori 테스트 작성 (교과서 예제, brute-force 대조) | `tests/test_apriori.py` | 교과서 예제 정답을 손으로 검산: [ ] |
 | 2026-11-25 | 함수별 빈칸 채우기 힌트 제공. `count_singletons`·`generate_candidates`·`count_candidates`는 본인이 빈칸을 채우고 AI가 버그 위치를 지적(import 누락, prune 부분집합 크기). `apriori` 본문의 while 루프 빈칸 3곳(함수 호출 인자, `k = k + 1`)은 AI가 답을 알려줌 | `patterns/apriori.py` | 테스트 8개 실행으로 확인 |
 | 2026-11-25 | 본인 요청으로 코드 주석 추가 (코드 동작 변경 없음), 파일 상단 작성자 표기 수정 | `patterns/apriori.py` | 주석 추가 후 테스트 8개 재통과. 주석 내용 직접 읽고 확인: [ ] |
+| 2026-11-25 | 연관 규칙 생성: 뼈대(서명·docstring·공식)에 더해 본인 요청으로 **함수 본문 3개와 주석 전체를 AI가 작성** | `patterns/rules.py` | 테스트 9개 통과. 코드·주석 직접 읽고 이해 확인: [ ] |
+| 2026-11-25 | 규칙 생성 테스트 작성 (교과서 예제 수치, brute-force 대조) | `tests/test_rules.py` | 예제 confidence·lift 손 계산 검산: [ ] |
