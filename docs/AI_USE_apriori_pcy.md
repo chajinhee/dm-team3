@@ -1,0 +1,14 @@
+# AI 사용 기록: Apriori / PCY 파트 (보안A)
+
+보고서 AI-use disclosure 작성용 원자료. 작업할 때마다 한 줄씩 추가한다.
+
+- 도구: Claude Code (Anthropic), 모델 Claude Opus 5.5 (`claude-opus-5-5`)
+- 원칙: 알고리즘 함수 본문은 본인이 작성. AI는 개념 설명, 함수 뼈대(서명·docstring), 테스트 작성, 코드 리뷰만 담당.
+
+| 날짜 | AI가 한 일 | 영향받은 파일 | 본인이 검증·수정한 내용 |
+|---|---|---|---|
+| 2026-11-25 | 과제 안내문·팀 기획안·팀원 구현 분석, 개선 방향 제안 | (없음) | |
+| 2026-11-25 | Apriori 함수 뼈대(서명·docstring·TODO) 작성 | `patterns/apriori.py` (본문은 본인 작성) | |
+| 2026-11-25 | Apriori 테스트 작성 (교과서 예제, brute-force 대조) | `tests/test_apriori.py` | 교과서 예제 정답을 손으로 검산: [ ] |
+| 2026-11-25 | 함수별 빈칸 채우기 힌트 제공. `count_singletons`·`generate_candidates`·`count_candidates`는 본인이 빈칸을 채우고 AI가 버그 위치를 지적(import 누락, prune 부분집합 크기). `apriori` 본문의 while 루프 빈칸 3곳(함수 호출 인자, `k = k + 1`)은 AI가 답을 알려줌 | `patterns/apriori.py` | 테스트 8개 실행으로 확인 |
+| 2026-11-25 | 본인 요청으로 코드 주석 추가 (코드 동작 변경 없음), 파일 상단 작성자 표기 수정 | `patterns/apriori.py` | 주석 추가 후 테스트 8개 재통과. 주석 내용 직접 읽고 확인: [ ] |
