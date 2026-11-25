@@ -1,0 +1,30 @@
+{
+  "stage": "final",
+  "e1_frequent_itemsets": 2544,
+  "runtime_s": 7.7133851000107825,
+  "default_cfg": {
+    "window": 60,
+    "threshold": 1.5,
+    "top_m": 8
+  },
+  "rule_min_support": 0.01,
+  "top_n_rules": 10,
+  "k_list": [
+    1,
+    2,
+    3,
+    4
+  ],
+  "strategies": [
+    "lift",
+    "coverage",
+    "novel"
+  ],
+  "min_lift": 2.0,
+  "primary_strategy": "coverage",
+  "python": "3.14.4",
+  "numpy": "2.5.5",
+  "pandas": "3.1.1",
+  "platform": "Windows-11-10.0.26200-SP0",
+  "run_at": "2026-11-26 03:20:17"
+}

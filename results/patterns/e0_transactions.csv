@@ -1,0 +1,3 @@
+split,window,threshold,top_m,windows,empty_ratio,mean_items,max_items,distinct_items,attack_windows,attack_ratio,attack_events
+train1,60,1.5,8,4680,0.033547008547008546,5.802350427350428,8,86,,,
+test1,60,1.5,8,900,0.0,6.202222222222222,8,60,59.0,0.06555555555555556,14.0
