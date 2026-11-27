@@ -1,0 +1,41 @@
+{
+  "base_main_commit": "22b92fe18650893f0b12a00a04e70ebaa1586cc8",
+  "tests_passed": 49,
+  "test_composition": {
+    "existing_pattern_common": 45,
+    "new_detection_regressions": 4
+  },
+  "reference": "HAI_Project/results_v6",
+  "detector_settings_match": true,
+  "multipliers_match": true,
+  "dataframe_comparisons": {
+    "detector_grid.csv": {
+      "rows": 1088,
+      "numeric_exact_match_to_v6": true
+    },
+    "evaluation.csv": {
+      "rows": 6,
+      "numeric_exact_match_to_v6": true
+    },
+    "events.csv": {
+      "rows": 114,
+      "numeric_exact_match_to_v6": true
+    },
+    "pr_development.csv": {
+      "rows": 2400,
+      "numeric_exact_match_to_v6": true
+    },
+    "pr_evaluation.csv": {
+      "rows": 3600,
+      "numeric_exact_match_to_v6": true
+    }
+  },
+  "development_reads_only_train1_test1": true,
+  "portable_relative_source_hashes_valid": true,
+  "environment": {
+    "python": "3.13.2",
+    "numpy": "2.2.3",
+    "pandas": "2.3.3"
+  },
+  "validation_scope": "macOS; team Windows rerun and human code review remain to be recorded"
+}
