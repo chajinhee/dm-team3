@@ -40,6 +40,8 @@ docs/
   DATA_HAI.md             데이터 출처 · 버전 · SHA-256 · 다운로드 명령
   AI_USE_apriori_pcy.md   보안A 파트 AI 사용 기록 (파일별)
   report_securityA_draft.md  보고서 보안A 파트 초안
+  REFACTOR_GUIDE.md       팀 코드(run.py) 파트별 정리 가이드
+tools/compare_results.py  리팩터링 전후 결과 비교 (실행 시간 열 제외)
 data/                     원본 데이터 (저장소에 포함하지 않음, .gitignore)
 [팀 입력]                  이상 탐지 · 사례 검색 파트
 ```
