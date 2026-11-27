@@ -21,4 +21,9 @@
 | 2026-11-26 | 본인 요청으로 규칙 선택 기준 2개(coverage, novel) 추가 구현. test2 는 보지 않은 상태에서 test1 결과만 근거로 변경 | `experiments/run_patterns.py` | |
 | 2026-11-26 | 세 기준 개발 단계 비교 해석. **test2 실행 전 주 기준을 coverage 로 결정**(본인 승인), 코드에 `PRIMARY_STRATEGY` 로 기록 | `experiments/run_patterns.py` | |
 | 2026-11-26 | test2 최종 평가 1회 실행 (설정·기준 사전 고정) | `results/patterns/*final*` | |
+| 2026-11-27 | 본인 요청으로 그림 4개 생성 코드 작성·실행, 레이아웃 확인 후 수정 | `experiments/make_figures.py`, `results/patterns/figures/` | 그림 수치와 CSV 대조: [ ] |
+| 2026-11-27 | 본인 요청으로 보고서 보안A 파트 초안 작성 (방법·실험 설계·결과·한계·AI 공개 문장). 참고문헌 [8][9] 는 AI 제안 | `docs/report_securityA_draft.md` | AI가 초안 수치를 CSV와 재대조해 3곳 수정. 본인 검토·수정: [ ], 참고문헌 원문 확인: [ ] |
+| 2026-11-27 | 본인 요청으로 README 작성 (보안A 파트 실행 방법, 팀 파트는 빈칸) | `README.md` | README 의 테스트 명령 실행 확인 |
+| 2026-11-27 | 팀원 새 패키지와 내 구현 비교, 강의자료 DM_03 과 두 구현 대조 | (없음) | 강의 쪽 번호를 직접 확인: [ ] |
+| 2026-11-27 | 본인 요청으로 강의 정의 반영: Interest 지표 추가, 강의 예제 테스트 6개 추가, 실험 결과에 Interest·규칙 지지도 열 추가, 보고서 초안·README 갱신. 선택 동작은 바꾸지 않음 (test2 실행 후 변경이므로 보고서에 명시) | `patterns/rules.py`, `tests/test_rules.py`, `tests/test_apriori.py`, `experiments/run_patterns.py`, `results/patterns/`, `docs/report_securityA_draft.md`, `README.md` | 테스트 38개 통과. 재실행 결과의 기존 열이 이전과 같음을 확인 (시간 열 제외) |
 | 2026-11-25 | PCY 테스트 작성 (Apriori 결과와 동일성, 후보 수 감소 확인) | `tests/test_pcy.py` | |
