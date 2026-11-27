@@ -70,6 +70,14 @@ class TestSteps(unittest.TestCase):
         self.assertEqual(got.get(fs("I4", "I5"), 0), 0)
 
 
+class TestLectureP40(unittest.TestCase):
+    def test_careful_candidate_generation(self):
+        # 강의 p.40 주석: L2 = {b,m} {b,c} {c,m} {c,j} 일 때 {b,m,j} 는 {m,j} 가 빈발이 아니므로
+        # 후보가 될 수 없다. 부분집합 가지치기를 하면 C3 에는 {b,c,m} 만 남는다.
+        l2 = [fs("b", "m"), fs("b", "c"), fs("c", "m"), fs("c", "j")]
+        self.assertEqual(generate_candidates(l2, 3), {fs("b", "c", "m")})
+
+
 class TestApriori(unittest.TestCase):
     def test_textbook(self):
         self.assertEqual(apriori(TX, 2), EXPECTED)

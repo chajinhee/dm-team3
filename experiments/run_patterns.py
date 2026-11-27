@@ -30,7 +30,7 @@ import pandas as pd
 
 from patterns.apriori import apriori
 from patterns.pcy import pcy
-from patterns.rules import rule_metrics
+from patterns.rules import interest, rule_metrics
 from patterns.transactions import (ATTACK, add_attack_item, attack_events, fit_scaler, load_labels,
                                    load_measurements, make_transactions, window_labels, zscore)
 
@@ -44,8 +44,16 @@ K_LIST = [1, 2, 3, 4]     # 규칙 전건(antecedent)의 최대 항목 수. K=1 
 #   lift     : lift 내림차순 (1차 방식, 팀원 방식과 같음) → confidence 1.0 의 시나리오 전용 규칙이 뽑혀 과적합
 #   coverage : lift >= MIN_LIFT 인 규칙 중 공격 창을 많이 덮는 순 → 여러 공격에 공통인 규칙을 우선
 #   novel    : coverage 조건 + 전건이 train1(정상 운전)에서 한 번도 나오지 않은 규칙만
+# 강의(DM_03 p.15-17) 와의 대응 (2026-11-27 정리. 선택 동작은 바꾸지 않음):
+#   - support >= s : 모든 기준에서 A ∪ {ATTACK} 이 최소 지지도 이상이어야 규칙이 된다.
+#   - confidence >= c : lift >= 2 는 confidence >= 2·P(ATTACK) 와 같으므로,
+#     coverage·novel 은 c = 2·P(ATTACK) (test1 전체 기준 약 0.131) 인 confidence 기준을 쓰는 셈이다.
+#     lift 기준은 confidence 기준 없이 상위 10개를 고른다.
+#   - interest (p.13) : 후건이 ATTACK 하나로 고정되면 interest 와 lift 는 confidence 의 증가함수라 순위가 같다.
+#     그래서 lift 기준 = interest 기준이다. 결과 CSV 에는 interest 를 함께 보고한다.
 STRATEGIES = ["lift", "coverage", "novel"]
 MIN_LIFT = 2.0
+LECTURE_INTEREST = 0.5    # 강의 p.13 "Interesting rules: usually above 0.5" — 보고용 표시만, 선택에는 쓰지 않음
 # 주 기준: test2 실행 전(2026-11-26)에 개발 단계 결과만으로 결정.
 # 근거: E3 18개 설정 평균 holdout F1(coverage .115 / lift .067 / novel .006)과 평균 검출 공격 구간 수가 가장 높고,
 #       K>=2 에서도 holdout F1 이 0 으로 무너지지 않음. final 단계에서도 세 기준 모두 보고한다.
@@ -94,7 +102,9 @@ def mine_attack_rules(tx: list[frozenset], wl: np.ndarray, min_support: float, m
             # 본인이 구현한 rule_metrics 사용. Apriori 성질로 antecedent 와 {ATTACK} 개수가 frequent 에 있다
             support, confidence, lift = rule_metrics(frequent, n, antecedent, target)
             rules.append({"antecedent": antecedent, "count": count,
-                          "support": support, "confidence": confidence, "lift": lift})
+                          "support": support, "confidence": confidence,
+                          "interest": interest(confidence, frequent[target] / n),  # 강의 p.13
+                          "lift": lift})
     rules.sort(key=lambda r: (-r["lift"], -r["support"], sorted(r["antecedent"])))
     return rules, len(frequent)
 
@@ -149,6 +159,7 @@ def evaluate_rules(rules: list[dict], tx: list[frozenset], wl: np.ndarray, windo
         hit = int((match & y).sum())
         conf = hit / cnt if cnt else float("nan")
         per_rule.append({"match": cnt, "attack_hits": hit, "confidence": conf,
+                         "interest": interest(conf, base) if cnt else float("nan"),
                          "lift": conf / base if cnt and base > 0 else float("nan"),
                          "coverage": hit / n_attack if n_attack else float("nan")})
     summary = alarm_summary(alarm, y, window)
@@ -178,9 +189,13 @@ def rules_to_rows(rules, per_select, per_eval, k, select_name, eval_name, strate
     for rank, (r, a, b) in enumerate(zip(rules, per_select, per_eval), start=1):
         rows.append({"strategy": strategy, "K": k, "rank": rank, "antecedent": itemset_text(r["antecedent"]),
                      "size": len(r["antecedent"]), "train1_normal_count": r["normal_count"],
+                     f"{select_name}_rule_support": r["count"],   # 강의 p.15: count(A ∪ {ATTACK})
                      f"{select_name}_match": a["match"], f"{select_name}_confidence": a["confidence"],
+                     f"{select_name}_interest": a["interest"],
+                     f"{select_name}_interest_ge_{LECTURE_INTEREST}": bool(a["interest"] >= LECTURE_INTEREST),
                      f"{select_name}_lift": a["lift"], f"{select_name}_coverage": a["coverage"],
                      f"{eval_name}_match": b["match"], f"{eval_name}_confidence": b["confidence"],
+                     f"{eval_name}_interest": b["interest"],
                      f"{eval_name}_lift": b["lift"], f"{eval_name}_coverage": b["coverage"]})
     return rows
 
@@ -383,7 +398,8 @@ def main():
 
     info = run_dev(args.data, args.out) if args.stage == "dev" else run_final(args.data, args.out)
     info.update({"default_cfg": DEFAULT_CFG, "rule_min_support": RULE_MIN_SUPPORT, "top_n_rules": TOP_N_RULES,
-                 "k_list": K_LIST, "strategies": STRATEGIES, "min_lift": MIN_LIFT, "primary_strategy": PRIMARY_STRATEGY, "python": sys.version.split()[0], "numpy": np.__version__,
+                 "k_list": K_LIST, "strategies": STRATEGIES, "min_lift": MIN_LIFT, "primary_strategy": PRIMARY_STRATEGY,
+                 "lecture_interest_reporting_threshold": LECTURE_INTEREST, "python": sys.version.split()[0], "numpy": np.__version__,
                  "pandas": pd.__version__, "platform": platform.platform(),
                  "run_at": time.strftime("%Y-%m-%d %H:%M:%S")})
     (args.out / f"run_info_{args.stage}.json").write_text(json.dumps(info, indent=2, ensure_ascii=False), encoding="utf-8")

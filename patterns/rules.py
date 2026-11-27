@@ -4,9 +4,16 @@
       docs/AI_USE_apriori_pcy.md 참고.
 
 규칙 A -> B 의 뜻: "A 가 관측된 창에서는 B 도 함께 관측되는 경향이 있다" (인과가 아니라 동시 관측)
-- support(A -> B)    = count(A ∪ B) / n
-- confidence(A -> B) = count(A ∪ B) / count(A)          # A 가 있을 때 B 도 있을 확률
-- lift(A -> B)       = confidence(A -> B) / (count(B) / n)  # 1 보다 크면 우연보다 자주 같이 나옴
+- support(A -> B)    = count(A ∪ B) / n                     # 강의 p.15: 규칙의 지지도 = 양쪽 합집합의 지지도
+- confidence(A -> B) = count(A ∪ B) / count(A)              # 강의 p.12: P(B | A)
+- interest(A -> B)   = |confidence(A -> B) - count(B) / n|  # 강의 p.13: |P(B | A) - P(B)|, 보통 0.5 이상이면 흥미로움
+- lift(A -> B)       = confidence(A -> B) / (count(B) / n)  # 강의 밖 보조 지표: 1 보다 크면 우연보다 자주 같이 나옴
+
+강의(p.15-17)의 문제 정의: support >= s 이고 confidence >= c 인 규칙을 모두 찾는다.
+  - support >= s 는 입력 frequent 가 이미 보장한다 (A ∪ B 가 빈발집합이어야 규칙이 생성됨).
+  - confidence >= c 는 generate_rules 의 min_confidence 로 건다.
+참고: 후건 B 가 하나로 고정되면 (예: ATTACK) interest 와 lift 는 둘 다 confidence 의 증가함수라서
+      규칙 순위가 같다. interest 는 강의 정의를 따르려고, lift 는 기준 비율 대비 배수를 보려고 함께 보고한다.
 
 입력 frequent 는 apriori() 의 반환값 {itemset: count} 이다.
 Apriori 성질 때문에 빈발집합의 부분집합은 모두 frequent 안에 들어 있다.
@@ -54,13 +61,22 @@ def rule_metrics(frequent: dict[frozenset, int], n_transactions: int,
     return support, confidence, lift
 
 
+def interest(confidence: float, consequent_ratio: float) -> float:
+    """강의 p.13 의 Interest = |confidence - P(B)|.
+
+    절댓값이므로 양의 연관(B 가 더 자주 나옴)과 음의 연관(덜 나옴)을 모두 크게 본다.
+    방향은 confidence > P(B) 인지 (= lift > 1 인지) 로 따로 확인한다.
+    """
+    return abs(confidence - consequent_ratio)
+
+
 def generate_rules(frequent: dict[frozenset, int], n_transactions: int,
                    min_confidence: float) -> list[dict]:
     """크기 2 이상인 빈발집합 I 마다, I 를 A 와 B = I - A 로 나눠 규칙 A -> B 를 만든다.
 
-    confidence >= min_confidence 인 규칙만 남긴다.
+    confidence >= min_confidence 인 규칙만 남긴다. (강의 p.17 "Output the rules above the confidence threshold")
     규칙 하나는 아래 키를 가진 dict 로 표현한다.
-        {"antecedent": A, "consequent": B, "support": ..., "confidence": ..., "lift": ...}
+        {"antecedent": A, "consequent": B, "support": ..., "confidence": ..., "interest": ..., "lift": ...}
     반환 순서는 자유.
     """
     rules = []
@@ -75,6 +91,8 @@ def generate_rules(frequent: dict[frozenset, int], n_transactions: int,
                     "consequent": consequent,
                     "support": support,
                     "confidence": confidence,
+                    # P(B) = count(B) / n = confidence / lift 로 다시 계산하지 않고 개수에서 바로 구한다
+                    "interest": interest(confidence, frequent[consequent] / n_transactions),
                     "lift": lift,
                 })
     # 참고: 크기 k 집합 하나에서 2^k - 2 개의 규칙 후보가 나온다.
