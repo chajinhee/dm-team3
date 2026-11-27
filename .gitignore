@@ -2,3 +2,5 @@ data/
 __pycache__/
 *.pyc
 .venv/
+results_before/
+results_after/
