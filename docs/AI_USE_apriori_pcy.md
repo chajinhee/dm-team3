@@ -28,4 +28,5 @@
 | 2026-11-27 | 본인 요청으로 강의 정의 반영: Interest 지표 추가, 강의 예제 테스트 6개 추가, 실험 결과에 Interest·규칙 지지도 열 추가, 보고서 초안·README 갱신. 선택 동작은 바꾸지 않음 (test2 실행 후 변경이므로 보고서에 명시) | `patterns/rules.py`, `tests/test_rules.py`, `tests/test_apriori.py`, `experiments/run_patterns.py`, `results/patterns/`, `docs/report_securityA_draft.md`, `README.md` | 테스트 38개 통과. 재실행 결과의 기존 열이 이전과 같음을 확인 (시간 열 제외) |
 | 2026-11-27 | 본인 요청으로 팀 코드 정리 가이드와 결과 비교 스크립트 작성. 스크립트는 팀원 run.py 두 실행 결과(14개 파일 동일)와 인위적 차이로 동작 확인 | `docs/REFACTOR_GUIDE.md`, `tools/compare_results.py` | 가이드 내용 검토: [ ] |
 | 2026-11-27 | 본인 요청으로 정리 가이드 5절을 역할별 작업 순서로 수정 (PR #1 merge → 원본 업로드 → main 에서 파트별 브랜치, git 미사용 시 zip 경로) | `docs/REFACTOR_GUIDE.md` | |
+| 2026-11-27 | 본인 요청으로 PR #1 merge, 팀원 원본 HAI_Project 업로드(수정 없음), 공통 모듈 common/ 작성(팀원 run.py 에서 설정·데이터 검사·정규화·60초 창 분리, 주석), run.py 가 common/ 을 쓰도록 변경, test_common 7개 작성 | `common/`, `HAI_Project/run.py`, `tests/test_common.py` | 원본 run.py 결과와 비교해 14개 파일 동일 (실행 시간 제외), 원본 test_pipeline 9개 통과 |
 | 2026-11-25 | PCY 테스트 작성 (Apriori 결과와 동일성, 후보 수 감소 확인) | `tests/test_pcy.py` | |

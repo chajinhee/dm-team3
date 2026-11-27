@@ -166,13 +166,24 @@ git push -u origin refactor/detection
 ## 8. 체크리스트
 
 **레포 준비 (차진희)**
-- [ ] PR #1 merge
-- [ ] 팀원 GitHub 아이디 받아 Collaborator 초대
-- [ ] `HAI_Project/` 원본 업로드 (수정 없음)
+- [x] PR #1 merge (2026-11-27)
+- [ ] 팀원 GitHub 아이디 받아 Collaborator 초대 (`jihye040719` 초대됨, 나머지 1명)
+- [x] `HAI_Project/` 원본 업로드 (수정 없음, commit `ff899ba`)
 
-**공통 (`common/`)** — 담당: [팀 입력]
-- [ ] `config.py`, `data.py`, `preprocess.py`, `windows.py` 로 분리, 주석 작성
-- [ ] 데이터 검사(해시, 1초 연속, 결측, 레이블 정렬) 동작 그대로
+**공통 (`common/`)** — 담당: 차진희 (2026-11-27)
+- [x] `config.py`, `data.py`, `preprocess.py`, `windows.py` 로 분리, 주석 작성
+- [x] 데이터 검사(해시, 1초 연속, 결측, 레이블 정렬) 동작 그대로
+- [x] `HAI_Project/run.py` 가 `common/` 을 import 하도록 변경. 원본 대비 결과 14개 파일 모두 같음 (`tools.compare_results`)
+- [x] `tests/test_common.py` 7개, 원본 `test_pipeline.py` 9개 통과
+
+**이후 파트에서 `common/` 쓰는 법**
+```python
+from common.config import SEED                        # 331
+from common.data import load_and_check                 # frames, manifest, stats, cols
+from common.preprocess import fit_scaler, transform    # scaler = fit_scaler(train_values); z = transform(values, scaler)
+from common.windows import transactions, window_labels # 60초 창 정수 항목, 창 레이블
+```
+`HAI_Project/run.py` 는 레포 최상위를 import 경로에 추가해 둬서, 정리 기간 동안 `python HAI_Project/run.py ...` 로 그대로 실행돼요.
 
 **전자공학 (`detection/`, `experiments/run_detection.py`)**
 - [ ] `pca.py`, `kmeans.py`, `zscore.py`, `metrics.py` 분리, 주석 작성

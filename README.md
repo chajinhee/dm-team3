@@ -26,6 +26,8 @@
 ## Repository layout
 
 ```
+common/                   팀 공통: 설정(config), 데이터 확보·검증(data), 정규화(preprocess), 60초 창(windows)
+HAI_Project/              팀원 원본 코드 (정리 중, docs/REFACTOR_GUIDE.md)
 patterns/                 보안A: 알고리즘 구현
   apriori.py              Apriori (join + prune, 크기 k 까지 단계적 확장)
   rules.py                연관 규칙 (support · confidence · lift)

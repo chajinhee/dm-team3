@@ -5,21 +5,13 @@ from collections import Counter, defaultdict
 import numpy as np
 import pandas as pd
 
-SEED=331
-COMMIT='2a814cebc9a66b06c9e5cd545e2d72e65d383737'
-FILES=['hai-train1.csv','hai-test1.csv','hai-test2.csv','label-test1.csv','label-test2.csv']
-def acquire(folder):
- import requests
- folder.mkdir(parents=True,exist_ok=True)
- for name in FILES:
-  p=folder/name
-  if not p.exists():
-   u=f'https://media.githubusercontent.com/media/icsdataset/hai/{COMMIT}/hai-23.05/{name}'
-   with requests.get(u,stream=True,timeout=180) as r:
-    r.raise_for_status()
-    with p.open('wb') as f:
-     for b in r.iter_content(1048576): f.write(b)
-  assert not p.read_bytes()[:80].startswith(b'version https://git-lfs'), 'LFS pointer, not data'
+# [정리 2026-11-27] 공통 부분(설정, 데이터 확보·검사, 정규화, 60초 창)은 레포 최상위 common/ 으로 옮겼다.
+# 정리 기간 동안 python HAI_Project/run.py 로 실행해도 common/ 을 찾도록 레포 최상위를 import 경로에 추가한다.
+sys.path.insert(0,str(Path(__file__).resolve().parent.parent))
+from common.config import SEED, HAI_COMMIT as COMMIT, HAI_FILES as FILES
+from common.data import download_hai as acquire, load_and_check
+from common.preprocess import fit_scaler, transform as scale
+from common.windows import transactions, window_labels
 
 def intervals(y):
  a=np.asarray(y,dtype=bool);d=np.diff(np.r_[False,a,False].astype(int))
@@ -41,14 +33,6 @@ def kfit(x,k):
   if np.max(np.abs(new-c))<1e-5:break
   c=new
  return c
-
-def transactions(z):
- # Non-overlapping 60-second windows; signed mean z, max 8 items.
- out=[]
- for a in range(0,len(z)-59,60):
-  m=z[a:a+60].mean(0);idx=np.argsort(-np.abs(m),kind='stable')[:8]
-  out.append(frozenset(int(2*j+(m[j]>0)) for j in idx if abs(m[j])>=1.5))
- return out
 
 def mine_pairs(tx,support=.02,buckets=1024,pcy=False):
  # Apriori k<=2, PCY two-pass hashed bucket pruning, exact verification.
@@ -90,26 +74,14 @@ def main():
  ap=argparse.ArgumentParser();ap.add_argument('--data',default='data');ap.add_argument('--out',default='results');ap.add_argument('--download',action='store_true');args=ap.parse_args()
  data=Path(args.data);out=Path(args.out);out.mkdir(parents=True,exist_ok=True)
  if args.download:acquire(data)
- started=time.perf_counter();manifest=[];frames={};stats=[]
- for n in FILES:
-  p=data/n;manifest.append(dict(file=n,bytes=p.stat().st_size,sha256=hashlib.sha256(p.read_bytes()).hexdigest()))
-  df=pd.read_csv(p);df['timestamp']=pd.to_datetime(df.timestamp)
-  assert df.timestamp.is_monotonic_increasing
-  gaps=int((df.timestamp.diff().dropna().dt.total_seconds()!=1).sum())
-  if n!='label-test2.csv':
-   assert df.timestamp.is_unique and gaps==0
-  frames[n]=df;stats.append(dict(file=n,rows=len(df),columns=len(df.columns),missing=int(df.isna().sum().sum()),gaps=gaps,start=str(df.timestamp.iloc[0]),end=str(df.timestamp.iloc[-1])))
- train=frames['hai-train1.csv'];cols=list(train.columns[1:]);assert len(cols)==86
- for n in (1,2):
-  x=frames[f'hai-test{n}.csv'];l=frames[f'label-test{n}.csv']
-  assert len(x)==len(l)
-  if n==1: assert x.timestamp.equals(l.timestamp)
-  else: assert x.timestamp.dt.floor('min').equals(l.timestamp), 'Row-aligned minute timestamps mismatch'
-  assert set(l.label.unique())<={0,1};assert list(x.columns[1:])==cols
- x=train[cols].to_numpy(float);cut=int(len(x)*.6);fit=x[:cut];med=np.nanmedian(fit,axis=0)
- # No missing values in observed inputs. Fill future missing values with fit medians only.
- fit=np.where(np.isfinite(fit),fit,med);mu=fit.mean(0);sd=fit.std(0);constant=sd<1e-10;sd[constant]=1
- def transform(arr):return (np.where(np.isfinite(arr),arr,med)-mu)/sd
+ started=time.perf_counter()
+ # [정리] 파일 읽기·SHA-256·1초 연속·레이블 정렬 검사 → common/data.py load_and_check
+ frames,manifest,stats,cols=load_and_check(data)
+ train=frames['hai-train1.csv']
+ # [정리] train1 앞 60% 기준 중앙값·평균·표준편차, 상수 변수 std=1 → common/preprocess.py fit_scaler
+ x=train[cols].to_numpy(float);scaler=fit_scaler(x)
+ cut=scaler.cut;med=scaler.median;mu=scaler.mean;sd=scaler.std;constant=scaler.constant
+ def transform(arr):return scale(arr,scaler)
  z=transform(x);cal=z[cut:];zf=z[:cut]
  dev=transform(frames['hai-test1.csv'][cols].to_numpy(float));test=transform(frames['hai-test2.csv'][cols].to_numpy(float))
  yd=frames['label-test1.csv'].label.to_numpy(int);yt=frames['label-test2.csv'].label.to_numpy(int)
@@ -144,7 +116,7 @@ def main():
  final.append(dict(model='Always normal',setting='constant zero',threshold=None,**metrics(yt,np.zeros_like(yt))))
  pd.DataFrame(grid).to_csv(out/'development_grid.csv',index=False);pd.DataFrame(final).to_csv(out/'detection_test2.csv',index=False)
  # Fit-state discretization only, no test2 tuning; patterns mined on development.
- td=transactions(dev);tt=transactions(test);wd=np.array([yd[i:i+60].max() for i in range(0,len(yd)-59,60)]);wt=np.array([yt[i:i+60].max() for i in range(0,len(yt)-59,60)])
+ td=transactions(dev);tt=transactions(test);wd=window_labels(yd);wt=window_labels(yt)
  timings=[];apairs=None
  for support in [.01,.02,.05]:
   for pcy in [False,True]:
