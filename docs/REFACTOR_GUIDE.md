@@ -23,7 +23,8 @@
    - `kfit` (K-means 표본 추출·초기 중심)
    - `retrieval` (MinHash 해시 계수 a, b)
    - main 166–167줄 (test2 질의 200개 추출)
-3. **main 브랜치에 바로 올리지 않아요.** 새 브랜치에서 작업하고 PR 로 올려요 (5절).
+3. **정리 작업은 main 브랜치에 바로 올리지 않아요.** 새 브랜치에서 작업하고 PR 로 올려요 (5-2).
+   예외는 원본 `HAI_Project/` 를 수정 없이 올리는 첫 commit 하나뿐이에요 (5-1).
 
 ## 3. 목표 구조와 `run.py` 대응표
 
@@ -37,6 +38,8 @@ tests/         파트별 단위 테스트
 tools/         compare_results.py (리팩터링 검증)
 results/       detection/, patterns/, retrieval/
 ```
+
+줄 번호는 `HAI_Submission_Local` (11/27) 의 `run.py` 기준이에요. 5-1 에서 `HAI_Project/run.py` 로 올라가는 파일과 같아요.
 
 | 지금 `run.py` (줄) | 내용 | 옮길 곳 | 담당 |
 |---|---|---|---|
@@ -67,8 +70,9 @@ results/       detection/, patterns/, retrieval/
 ## 4. 결과가 같은지 확인하는 방법 (필수)
 
 ```powershell
-# 1) 정리 전: 지금 run.py 로 결과를 한 번 만들어 보관
-python run.py --data data --out results_before
+# 1) 정리 전: 원본 run.py (5-1 에서 올린 HAI_Project/) 로 결과를 한 번 만들어 보관
+#    data/ 폴더는 레포 최상위에 있어요 (docs/DATA_HAI.md 참고)
+python HAI_Project/run.py --data data --out results_before
 
 # 2) 정리 후: 새 실행 스크립트로 결과 생성
 python -m experiments.run_detection --data data --out results/detection
@@ -84,17 +88,44 @@ python -m tools.compare_results results_before results/retrieval
 - 이 스크립트로 기존 `run.py` 두 번의 실행(11/16 실행과 보안B 의 Windows 재실행)을 비교했더니 14개 파일 모두 같았어요.
 - `results_before/` 는 비교용이라 commit 하지 않아요.
 
-## 5. 작업 순서
+## 5. 작업 순서 (역할별)
 
-1. `feat/apriori-pcy` 브랜치에서 새 브랜치를 만들어요 (보안A 구조가 이미 있어서):
-   ```powershell
-   git fetch origin
-   git switch -c refactor/detection-retrieval origin/feat/apriori-pcy
-   ```
-2. `HAI_Project` 의 파일을 레포에 넣고, 위 4절 1) 로 `results_before` 를 만들어요.
-3. 3절 대응표대로 파일을 나눠요. 한 파트씩 나누고 그때마다 4절로 확인하면 안전해요.
-4. 테스트를 실행해요: `python -m unittest discover tests` (보안A 38개 + 옮긴 테스트).
-5. PR 을 `main` 으로 올리고, 다른 팀원이 리뷰해요.
+### 5-1. 레포 준비 — 차진희 (레포 관리)
+
+1. 보안A PR [#1](https://github.com/chajinhee/dm-team3/pull/1) (`feat/apriori-pcy` → `main`) 을 merge 해요. 이후 모든 작업은 `main` 에서 출발해요.
+2. 팀원 GitHub 아이디를 받아 레포에 초대해요 (Settings → Collaborators).
+3. 최지혜 님이 공유한 `HAI_Submission_Local` 의 `HAI_Project` 를 **수정 없이 폴더째** `main` 에 올려요.
+   - commit 메시지: `최지혜 님 작성 HAI_Project 원본 업로드 (11/27 로컬 실행본, 수정 없음)`
+   - 원본이 git 에 남아 정리 전후 비교 기준이 되고, 카톡 zip 버전 혼동이 없어져요.
+   - 폴더째 넣으므로 레포 최상위의 `README.md`·`requirements.txt` 와 충돌하지 않아요.
+
+### 5-2. 파트별 정리 — 각 파트 담당
+
+`HAI_Project/run.py` 에서 자기 파트를 3절 대응표의 새 폴더로 옮겨요. 공통(`common/`) 부분은 먼저 한 사람이 맡아 merge 한 뒤, 나머지가 그 위에서 작업하면 충돌이 적어요.
+
+**git 을 쓰는 경우**
+```powershell
+git switch main
+git pull
+git switch -c refactor/detection      # 보안B 는 refactor/retrieval, 공통은 refactor/common
+# ... 3절 대응표대로 파일 나누기, 6절 규칙대로 주석 달기 ...
+python -m unittest discover tests      # 보안A 38개 + 옮긴 테스트
+# 4절 방법으로 결과 비교 → "모두 같음" 확인
+git add <나눈 파일들>
+git commit -m "탐지 파트 run.py 에서 detection/ 으로 분리 (결과 동일 확인)"
+git push -u origin refactor/detection
+```
+그다음 GitHub 에서 `main` 으로 PR 을 만들고, 다른 팀원 한 명이 리뷰한 뒤 merge 해요.
+
+**git 이 어려운 경우 (지금처럼 카톡 공유도 괜찮아요)**
+1. 로컬에서 3절·6절대로 정리하고 4절로 결과가 같은지 확인해요.
+2. 정리한 폴더를 zip 으로 공유하면서 "결과 비교: 모두 같음" 출력도 같이 보내 주세요.
+3. 차진희가 브랜치에 올리고 PR 을 만들어요. commit 메시지에 **작성자 이름**을 꼭 남겨요 (기여 기록).
+
+### 5-3. 마무리 — 차진희
+
+1. 모든 파트가 옮겨지면 `HAI_Project/` 폴더를 삭제해요 (원본은 git 기록에 남아요).
+2. 7절 통합 마무리 항목을 진행해요.
 
 ## 6. 코드 작성 규칙
 
@@ -134,7 +165,12 @@ python -m tools.compare_results results_before results/retrieval
 
 ## 8. 체크리스트
 
-**공통 (`common/`)**
+**레포 준비 (차진희)**
+- [ ] PR #1 merge
+- [ ] 팀원 GitHub 아이디 받아 Collaborator 초대
+- [ ] `HAI_Project/` 원본 업로드 (수정 없음)
+
+**공통 (`common/`)** — 담당: [팀 입력]
 - [ ] `config.py`, `data.py`, `preprocess.py`, `windows.py` 로 분리, 주석 작성
 - [ ] 데이터 검사(해시, 1초 연속, 결측, 레이블 정렬) 동작 그대로
 
@@ -150,7 +186,11 @@ python -m tools.compare_results results_before results/retrieval
 - [ ] `retrieval_queries.csv` 같음 확인
 - [ ] 테스트 이동 (`test_jaccard`, `test_signature_identical`)
 
-**보안A**
+**보안A (차진희)**
 - [x] `patterns/` 4개 모듈, `experiments/run_patterns.py`, 테스트 38개, 결과·그림 (완료)
-- [ ] `run.py` 의 `mine_pairs`·규칙 부분 삭제 확인
+- [ ] `HAI_Project/run.py` 의 `mine_pairs`·규칙 부분 삭제 (다른 파트 정리 후 함께)
 - [ ] 보고서 보안A 절 교체 문장 전달
+
+**마무리 (차진희)**
+- [ ] `HAI_Project/` 폴더 삭제
+- [ ] 7절 통합 마무리
