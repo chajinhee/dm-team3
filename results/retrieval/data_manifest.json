@@ -1,0 +1,27 @@
+[
+  {
+    "file": "hai-train1.csv",
+    "bytes": 162418984,
+    "sha256": "53007b0ba604fbf338e7ac2e08cd81d874b5d1388f3aecb213ddcba5bf2bec4a"
+  },
+  {
+    "file": "hai-test1.csv",
+    "bytes": 31255559,
+    "sha256": "78c7f1d4de1f2ab9ccc2f8c719f80f831033543adb0c81d0d78f84f40838d4be"
+  },
+  {
+    "file": "hai-test2.csv",
+    "bytes": 132946575,
+    "sha256": "b2b8dd295aefd87e39260fe43cb4c73ee86d6264b0ac4b0761e7efb0c2b545c3"
+  },
+  {
+    "file": "label-test1.csv",
+    "bytes": 1242017,
+    "sha256": "eaf69edb9c5834bc393afd7bf658b5e408d34fd7bfc3261f80516765fb818fbc"
+  },
+  {
+    "file": "label-test2.csv",
+    "bytes": 4500018,
+    "sha256": "8090c44981176e39b0f01a7126a80248ac0b93355c00f9db4d4e2f2106452b92"
+  }
+]
