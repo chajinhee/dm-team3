@@ -179,10 +179,16 @@ git push -u origin refactor/detection
 **이후 파트에서 `common/` 쓰는 법**
 ```python
 from common.config import SEED                        # 331
-from common.data import load_and_check                 # frames, manifest, stats, cols
+from common.data import load_split                     # 필요한 파일만 읽기 (2026-11-28 추가, 권장)
+from common.data import load_and_check                 # 기본 5개 파일 한꺼번에 (test2 포함, 원본 run.py 방식)
 from common.preprocess import fit_scaler, transform    # scaler = fit_scaler(train_values); z = transform(values, scaler)
 from common.windows import transactions, window_labels # 60초 창 정수 항목, 창 레이블
+
+train = load_split(DATA, "train1")                          # hai-train1.csv 만 읽음
+test1 = load_split(DATA, "test1", columns=train.columns)    # test1 + label-test1 만 읽음 (test2 는 열지 않음)
+# test1.values (54000, 86), test1.labels (0/1), test1.timestamps, test1.manifest
 ```
+`load_split` 은 기본으로 SHA-256 을 `common.config.HAI_SHA256` (train1·2·4, test1·2, 레이블) 과 대조해요. 개발 단계에서 test2 를 건드리지 않아야 하는 코드는 `load_split` 을 쓰면 돼요.
 `HAI_Project/run.py` 는 레포 최상위를 import 경로에 추가해 둬서, 정리 기간 동안 `python HAI_Project/run.py ...` 로 그대로 실행돼요.
 
 **전자공학 (`detection/`, `experiments/run_detection.py`)**

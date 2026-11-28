@@ -29,4 +29,6 @@
 | 2026-11-27 | 본인 요청으로 팀 코드 정리 가이드와 결과 비교 스크립트 작성. 스크립트는 팀원 run.py 두 실행 결과(14개 파일 동일)와 인위적 차이로 동작 확인 | `docs/REFACTOR_GUIDE.md`, `tools/compare_results.py` | 가이드 내용 검토: [ ] |
 | 2026-11-27 | 본인 요청으로 정리 가이드 5절을 역할별 작업 순서로 수정 (PR #1 merge → 원본 업로드 → main 에서 파트별 브랜치, git 미사용 시 zip 경로) | `docs/REFACTOR_GUIDE.md` | |
 | 2026-11-27 | 본인 요청으로 PR #1 merge, 팀원 원본 HAI_Project 업로드(수정 없음), 공통 모듈 common/ 작성(팀원 run.py 에서 설정·데이터 검사·정규화·60초 창 분리, 주석), run.py 가 common/ 을 쓰도록 변경, test_common 7개 작성 | `common/`, `HAI_Project/run.py`, `tests/test_common.py` | 원본 run.py 결과와 비교해 14개 파일 동일 (실행 시간 제외), 원본 test_pipeline 9개 통과 |
+| 2026-11-28 | 본인 요청으로 PR #4·#5 리뷰(코드 대조, 테스트·결과 재현, 강의자료 DM_05·DM_06 대조), 리뷰 문구 초안 작성 | (없음, 리뷰 댓글은 본인이 게시) | 재현 결과는 직접 실행으로 확인 |
+| 2026-11-28 | 본인 요청으로 common/data.py 에 파일별 로더 load_split 추가, load_and_check 는 같은 검사 함수를 쓰도록 정리, 해시 기록을 common/config.py 로, 테스트 5개 추가 | `common/data.py`, `common/config.py`, `tests/test_common.py`, `docs/REFACTOR_GUIDE.md` | 원본 run.py 결과 14개 파일 동일, 실제 데이터 해시 대조 통과. train2·train4 해시는 PR #4 값이며 직접 대조하지 않음 |
 | 2026-11-25 | PCY 테스트 작성 (Apriori 결과와 동일성, 후보 수 감소 확인) | `tests/test_pcy.py` | |
