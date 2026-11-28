@@ -1,0 +1,102 @@
+{
+  "checked_on": "2026-11-28",
+  "base_main_commit": "22b92fe18650893f0b12a00a04e70ebaa1586cc8",
+  "tests_passed": 51,
+  "environment": {
+    "platform": "macOS",
+    "python": "3.13.2",
+    "numpy": "2.2.3",
+    "pandas": "2.3.3"
+  },
+  "comparison_tolerance": {
+    "rtol": 1e-09,
+    "atol": 1e-12
+  },
+  "v1": {
+    "runner": "HAI_Project/run.py",
+    "compared_with": "HAI_Project/results/summary.json",
+    "results_match": {
+      "PCA": {
+        "setting": "PCA-0.99",
+        "f1": 0.42288686605981796,
+        "events_detected": 13
+      },
+      "K-means": {
+        "setting": "K-means-16",
+        "f1": 0.3380300237029234,
+        "events_detected": 29
+      }
+    },
+    "data_manifest_matches": true
+  },
+  "v6": {
+    "runner": "experiments/run_detection.py",
+    "stages_rerun": [
+      "develop",
+      "final"
+    ],
+    "compared_with": "results/detection at 281b997600a9987d9eb25e610f3915973c4a46c3",
+    "results_match": {
+      "detector_grid.csv": {
+        "rows": 1088,
+        "matches": true
+      },
+      "operating_grid.csv": {
+        "rows": 14,
+        "matches": true
+      },
+      "evaluation.csv": {
+        "rows": 6,
+        "matches": true
+      },
+      "events.csv": {
+        "rows": 114,
+        "matches": true
+      },
+      "pr_development.csv": {
+        "rows": 2400,
+        "matches": true
+      },
+      "pr_evaluation.csv": {
+        "rows": 3600,
+        "matches": true
+      },
+      "test2_scores.csv.gz": {
+        "rows": 230400,
+        "matches": true
+      }
+    },
+    "selected_settings_and_multipliers_match": true,
+    "applied_settings_and_data_manifest_match": true,
+    "updated_frozen_source_hashes": [
+      "detection/models.py",
+      "detection/pca.py",
+      "experiments/run_detection.py",
+      "docs/DETECTION_PROTOCOL.txt"
+    ],
+    "test2_evaluation": "retrospective comparison on repeatedly inspected data"
+  },
+  "portable_frozen_source_hashes": {
+    "verified_environment": "macOS with a Git checkout using core.autocrlf=true",
+    "frozen_text_files": 14,
+    "source_newlines": "CRLF normalized to LF before hashing",
+    "source_paths": "repository-relative paths with forward slashes",
+    "lf_develop_completed": true,
+    "crlf_final_completed": true,
+    "source_hashes_match_after_checkout": true,
+    "substantive_source_change_rejected": true,
+    "data_hashes_use_original_bytes": true,
+    "lf_tests_passed": 51,
+    "crlf_tests_passed": 51,
+    "settings_and_data_manifest_match_previous": true,
+    "result_rows_match_previous": {
+      "detector_grid.csv": 1088,
+      "operating_grid.csv": 14,
+      "pr_development.csv": 2400,
+      "evaluation.csv": 6,
+      "events.csv": 114,
+      "pr_evaluation.csv": 3600,
+      "test2_scores.csv.gz": 230400
+    }
+  }
+}
