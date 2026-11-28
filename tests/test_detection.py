@@ -1,15 +1,20 @@
-"""탐지 코드 분리 때 생길 수 있는 시점·경계·동점 처리 회귀를 검사한다.
+"""탐지의 시점·경계·동점 처리와 동결 해시의 호환성을 검사한다.
 
 작성 지원: OpenAI Codex. 작은 합성 입력과 독립 계산 기준을 사용한다.
 """
+from contextlib import chdir
+from pathlib import Path
+from tempfile import TemporaryDirectory
 import unittest
 
 import numpy as np
 
 from common.preprocess import transform
+from detection.datasets import sha256
 from detection.metrics import measure, pr
 from detection.pca import fit_normal
 from detection.postprocess import causal_score
+from experiments.run_detection import source_hashes
 
 
 class DetectionRegressionTests(unittest.TestCase):
@@ -50,6 +55,36 @@ class DetectionRegressionTests(unittest.TestCase):
         result = measure(np.zeros(3600, bool), np.r_[np.ones(60, bool), np.zeros(3540, bool)])
         self.assertEqual(result["false_alarms_per_normal_hour"], 1)
         self.assertEqual(result["false_positive_seconds_per_normal_hour"], 60)
+
+    def test_frozen_text_hashes_ignore_checkout_line_endings(self):
+        files = {
+            "detection/model.py": b"MODEL = 1\n",
+            "detection/data_hashes.json": b"{}\n",
+            "experiments/run_detection.py": b"# runner\n",
+            "docs/DETECTION_PROTOCOL.txt": b"Protocol\n",
+            "common/config.py": b"SEED = 331\n",
+            "common/preprocess.py": b"# preprocessing\n",
+        }
+        with TemporaryDirectory() as temporary, chdir(temporary):
+            for name, content in files.items():
+                path = Path(name)
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_bytes(content)
+            frozen = source_hashes()
+            self.assertEqual(frozen.keys(), files.keys())
+            for name, content in files.items():
+                Path(name).write_bytes(content.replace(b"\n", b"\r\n"))
+            self.assertEqual(source_hashes(), frozen)
+            Path("common/config.py").write_bytes(b"SEED = 332\r\n")
+            self.assertNotEqual(source_hashes()["common/config.py"], frozen["common/config.py"])
+
+    def test_dataset_hash_keeps_original_line_endings(self):
+        with TemporaryDirectory() as temporary:
+            csv = Path(temporary) / "readings.csv"
+            csv.write_bytes(b"sensor\n1\n")
+            raw_hash = sha256(csv)
+            csv.write_bytes(b"sensor\r\n1\r\n")
+            self.assertNotEqual(sha256(csv), raw_hash)
 
 
 if __name__ == "__main__":

@@ -53,6 +53,6 @@ python -m experiments.make_figures_detection --baseline-summary results_before/s
 - **v1**은 새로 생성한 `results_before/summary.json`의 `detection`에서 확인한다. 그래프 실행 시 `--baseline-summary`를 생략하면 저장소의 원본 `HAI_Project/results/summary.json`을 사용한다.
 - **v6**는 `results/detection/evaluation.csv`에서 검증한다. 선택한 설정과 재적합 후 임계값은 `selection.json`과 `applied_settings.json`에 기록한다. 실제 경보선은 해당 정상 임계값에 모델별 배수를 곱한 값이다. 별도 폴더에서 재실행하려면 개발·최종 평가·그래프에 같은 `--out` 값을 전달한다.
 - **비교 그래프**는 v1 요약과 v6 평가 CSV에서 직접 만들어진다. 보고 수치는 저장소에서 실행 가능한 v1·v6에 한정한다. 재실행과 저장된 결과의 대조 범위는 [검증 기록](../results/detection/verification.json)에 있다.
-- **공통 모듈**에서 `common.config`와 `common.preprocess`를 사용한다. v6 데이터 어댑터는 파일별 해시와 센서 열 및 초 단위 연속성을 확인해 개발 단계에서 test2를 읽지 않는다. 코드나 프로토콜 문서가 바뀌면 동결된 해시가 달라지므로 개발부터 다시 실행한다.
+- **공통 모듈**에서 `common.config`와 `common.preprocess`를 사용한다. v6 데이터 어댑터는 파일별 해시와 센서 열 및 초 단위 연속성을 확인해 개발 단계에서 test2를 읽지 않는다. 동결 검사는 코드·설정·프로토콜의 CRLF 줄바꿈을 LF로 통일하고 경로 구분자는 `/`로 기록한다. 텍스트 내용이 바뀌면 개발부터 다시 실행한다. 원자료 해시는 다운로드한 파일의 바이트를 그대로 검사한다.
 
 [AI 사용 기록](AI_USE_detection.md)

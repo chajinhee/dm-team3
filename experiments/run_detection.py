@@ -5,13 +5,14 @@
 v6의 test2는 여러 버전에서 확인한 후향 비교 자료다. v1은 HAI_Project/run.py로 재실행한다.
 """
 import argparse
+import hashlib
 import json
 from pathlib import Path
 
 import numpy as np
 import pandas as pd
 
-from detection.datasets import Dataset, download, sha256
+from detection.datasets import Dataset, download
 from detection.metrics import intervals, pr
 from detection.models import fit, raw
 from detection.postprocess import split_second
@@ -27,11 +28,14 @@ def write_json(path, value):
 
 
 def source_hashes():
-    """숫자에 영향을 주는 코드·설정·공통 모듈을 개발 동결에 포함한다."""
+    """동결 대상 텍스트의 상대 경로와 줄바꿈을 운영체제에 관계없이 맞춘다."""
     files = sorted(Path("detection").glob("*.py"))
     files.extend([Path("detection/data_hashes.json"), Path("experiments/run_detection.py"), PROTOCOL])
     files.extend([Path("common/config.py"), Path("common/preprocess.py")])
-    return {str(path): sha256(path) for path in files}
+    return {
+        path.as_posix(): hashlib.sha256(path.read_bytes().replace(b"\r\n", b"\n")).hexdigest()
+        for path in files
+    }
 
 
 def develop(data, output):

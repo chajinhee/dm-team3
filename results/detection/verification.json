@@ -1,7 +1,7 @@
 {
   "checked_on": "2026-11-28",
   "base_main_commit": "22b92fe18650893f0b12a00a04e70ebaa1586cc8",
-  "tests_passed": 49,
+  "tests_passed": 51,
   "environment": {
     "platform": "macOS",
     "python": "3.13.2",
@@ -75,5 +75,28 @@
       "docs/DETECTION_PROTOCOL.txt"
     ],
     "test2_evaluation": "retrospective comparison on repeatedly inspected data"
+  },
+  "portable_frozen_source_hashes": {
+    "verified_environment": "macOS with a Git checkout using core.autocrlf=true",
+    "frozen_text_files": 14,
+    "source_newlines": "CRLF normalized to LF before hashing",
+    "source_paths": "repository-relative paths with forward slashes",
+    "lf_develop_completed": true,
+    "crlf_final_completed": true,
+    "source_hashes_match_after_checkout": true,
+    "substantive_source_change_rejected": true,
+    "data_hashes_use_original_bytes": true,
+    "lf_tests_passed": 51,
+    "crlf_tests_passed": 51,
+    "settings_and_data_manifest_match_previous": true,
+    "result_rows_match_previous": {
+      "detector_grid.csv": 1088,
+      "operating_grid.csv": 14,
+      "pr_development.csv": 2400,
+      "evaluation.csv": 6,
+      "events.csv": 114,
+      "pr_evaluation.csv": 3600,
+      "test2_scores.csv.gz": 230400
+    }
   }
 }
