@@ -1,9 +1,9 @@
 Detection-only extraction of experiment_v6, using merged common modules at 22b92fe.
 This preserves the v6 numerical model, grid, temporal selection and two single-detector operating multipliers.
-No new hyperparameters are tried. PCA and K-means are evaluated separately.
+The v6 selection compares reconstruction PCA, lagged residual scoring and K-means. The final residual and K-means detectors are evaluated separately.
 Train1 first 60% fits models, last 40% normal-calibrates scores. Test1 front 60% selects family configs under 1 false segment/h and 60 false seconds/h, utility then F1 then false seconds.
 Test1 back chooses a multiplier from [1,.95,1.05,.9,1.1,.8,1.2] using the same criteria. It is development, previously used in v4/v5/v6.
 Refit train1 plus train2 with each file's first 60% fit and last 40% calibration. Transfer frozen quantile and multiplier; reselect seed by normal inertia only. Never cross a file boundary for lag/smoothing.
-Train1-only PCA is a same-code control. Evaluate frozen models on reused test2 and normal train4. Both have already been inspected. No fresh attack holdout is claimed.
+The train1-only residual detector provides a same-code control. Test2 was used to assess multiple versions, including v6. Train4 was also inspected and contains normal data only. The v6 results are retrospective comparisons. Independent attack evaluation requires a fresh labeled split.
 The frozen feature names and source/data hashes are checked. No offline alarm backdating.
-The covariance eigendecomposition and lagged linear prediction are described together for the PCA role. Lecturer acceptance needs team confirmation.
+Lecture PCA is reported using v1 PCA-0.99: it projects onto leading covariance eigenvectors and scores reconstruction error. PCA-0.99 and PCA-0.995 are also v6 development candidates. The selected PCA-multi key denotes a separate full-dimensional residual score using regularized precision matrices and the largest conditional residuals.

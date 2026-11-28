@@ -1,4 +1,4 @@
-"""PCA·K-means 공통 학습과 점수 API.
+"""재구성오차 PCA, 시차 잔차 탐지, K-means의 학습과 점수 API.
 
 기존 v6 실험의 계산 순서를 보존해 분리한 코드.
 작성 지원 및 모듈 분리: OpenAI Codex. 팀원의 독립 검토 범위는 docs/AI_USE_detection.md 참조.
@@ -25,6 +25,7 @@ def fit(ids, keys, dataset):
     model.update(projections={}, centers={}, seeds={})
     for key in keys:
         if key.startswith('PCA-0'):
+            # 누적 설명분산 기준으로 상위 성분을 남기는 강의식 PCA다.
             rank = int(np.searchsorted(cumulative, float(key.split('-')[1])) + 1)
             model['projections'][key] = vectors[:, ::-1][:, :rank]
         elif key == 'KM-original':
@@ -40,7 +41,8 @@ def fit(ids, keys, dataset):
 
 
 def raw(model, x, key):
-    """선택한 PCA 또는 K-means 모델의 이상 점수를 반환한다."""
+    """동결된 모델 키에 해당하는 이상 점수를 반환한다."""
+    # PCA-multi는 기존 결과와 호환되는 시차 잔차 탐지의 키다.
     if key == 'PCA-multi':
         return anomaly(x, model)
     z = standardize(x, model)

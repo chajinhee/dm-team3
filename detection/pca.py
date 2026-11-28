@@ -1,6 +1,6 @@
-"""PCA 고유분해 기반 조건부 잔차 탐지.
+"""정규화된 역공분산을 이용한 시차 예측 잔차 탐지.
 
-기존 v6 실험의 계산 순서를 보존해 분리한 코드.
+전체 고유쌍을 사용하며 모든 센서 차원을 유지한다. 기존 v6 계산 순서를 보존한다.
 작성 지원 및 모듈 분리: OpenAI Codex. 팀원의 독립 검토 범위는 docs/AI_USE_detection.md 참조.
 """
 import numpy as np
@@ -52,6 +52,7 @@ def fit_normal(normal, ids):
             beta = np.linalg.solve(xx + np.eye(len(mean)) * count * 0.0001, xy)
             residual = [x[delay:] - x[:-delay] @ beta for x in fit]
         covariance = np.cov(np.concatenate(residual), rowvar=False)
+        # 전체 고유쌍으로 정규화된 역공분산을 계산한다.
         values, vectors = np.linalg.eigh(covariance)
         precision = vectors / (np.maximum(values, 0) + 0.0001) @ vectors.T
         parts.append((delay, beta, precision / np.sqrt(np.diag(precision))))

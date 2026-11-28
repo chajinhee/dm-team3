@@ -1,8 +1,8 @@
-"""PCA·K-means v6 실험의 탐지 부분을 독립 실행한다.
+"""재구성오차 PCA·시차 잔차·K-means 후보를 비교한 v6 탐지 실험을 실행한다.
 
 작성 지원 및 분리: OpenAI Codex. 원 실험과 수치 동일성을 확인한 별도 추가 기능이다.
 저장소 최상위에서 python -m experiments.run_detection --stage develop/final 실행.
-기존 HAI_Project/run.py의 원본 재실행은 그대로 제공된다.
+v6의 test2는 여러 버전에서 확인한 후향 비교 자료다. v1은 HAI_Project/run.py로 재실행한다.
 """
 import argparse
 import json
