@@ -1,0 +1,18 @@
+{
+  "seed": 331,
+  "dev_windows": 900,
+  "test_windows": 3840,
+  "empty_dev_windows": 0,
+  "empty_test_windows": 0,
+  "retrieval": {
+    "minhash_recall5": 0.6410000000000001,
+    "lsh_recall5": 0.43200000000000005,
+    "exact_ms": 1.122240002732724,
+    "minhash_ms": 0.2800764993298799,
+    "lsh_ms": 0.11686849989928305,
+    "candidates": 22.585,
+    "queries": 200,
+    "gallery": 900,
+    "index_build_s": 0.04261690005660057
+  }
+}
